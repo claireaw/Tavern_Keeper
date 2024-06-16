@@ -51,7 +51,7 @@ async def addPoint(interaction, name: str):
         await interaction.response.send_message("User does not exist", ephemeral=True)
 
 
-@tree.command(name='seeitem', description='View an item in the store',
+@tree.command(name='seeitem', description='Inspect an item in the store',
               guild=discord.Object(id=))
 async def viewitem(interaction, name: str):
     myquery = {"name": name}
@@ -73,14 +73,17 @@ async def seestore(interaction):
     for x in collectionItems.find({'count': {'$gt': 0}}, {'_id': 0, 'name': 1, 'rarity': 1, 'price': 1}):
         z.append('Name: ' + x['name'] + '. Rarity: ' + str(x['rarity']) + '. Price: ' + str(x['price']) + ' point(s).')
 
-    count = collectionItems.count_documents({})
-    for i in range(collectionItems.count_documents({})):
+    count = collectionItems.count_documents({'count': {'$gt': 0}})
+    print(count)
+    for i in range(count):
         await interaction.channel.send(z[i])
-    await interaction.followup.send('')
-    await interaction.response.send_message(z[count - 1], ephemeral=True)
+        print(i)
+    await interaction.followup.send('ASTRAL MERCHANT:')
+    await interaction.response.send_message(z[count-1], ephemeral=True)
 
 
-@tree.command(name='myitems', description='View the items that you own', guild=discord.Object(id=))
+@tree.command(name='myitems', description='View the items that you own',
+              guild=discord.Object(id=))
 async def myitems(interaction):
     myquery = {"_id": interaction.user.id}
     z = []
@@ -124,13 +127,21 @@ async def buyitem(interaction, name: str):
 async def whoami(interaction):
     myquery = {"_id": interaction.user.id}
     z = []
-
+    # if there's a user with this id
     if collectionUsers.count_documents(myquery) == 1:
         for x in collectionUsers.find(myquery, {'_id': 0, 'name': 1, 'score': 1}):
             z.append('Username: ' + str(x['name']) + '. Points: ' + str(x['score']) + ' point(s).')
         await interaction.response.send_message(z, ephemeral=True)
     else:
-        await interaction.response.send_message('User does not exist, please run /setup to join the market', ephemeral=True)
+        await interaction.response.send_message('User does not exist, please run /setup to join the market',
+                                                ephemeral=True)
+
+
+@tree.command(name='announce', description='Announce changes to the store (staff)',
+              guild=discord.Object(id=))
+@app_commands.checks.has_role('staff')
+async def announce(interaction):
+    await interaction.response.send_message("The Astral Merchant has been updated!")
 
 
 intents = discord.Intents.default()
