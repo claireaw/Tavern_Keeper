@@ -1,4 +1,4 @@
-A quick bot made over a weekend.
+A quick bot originally made over a weekend.
 
 Some stuff that should be done:
   * Fix bug related to purchasing items
