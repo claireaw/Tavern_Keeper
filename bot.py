@@ -11,15 +11,19 @@ db2 = cluster['']
 collectionUsers = db2['']
 collectionItems = db2['']
 client = discord.Client(intents=intents)
+is_client_running = False
 
 tree = app_commands.CommandTree(client)
 
 
 @client.event
 async def on_ready():
-    await tree.sync(guild=discord.Object(id=))
-    print(f'{client.user} has connected to Discord!')
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you'))
+    global is_client_running
+
+    if not is_client_running:
+        await tree.sync(guild=discord.Object(id=))
+        print(f'{client.user} has connected to Discord!')
+        await client.change_presence(activity=discord.Game(name="Poker Night at the Inventory"))
 
 
 @commands.cooldown(rate=1, per=5, type=commands.BucketType.guild)
@@ -57,10 +61,11 @@ async def viewitem(interaction, name: str):
     myquery = {"name": name}
     z = []
     if collectionItems.count_documents(myquery) == 1:
-        for x in collectionItems.find(myquery, {'_id': 0, 'name': 1, 'rarity': 1, 'price': 1}):
+        for x in collectionItems.find(myquery, {'_id': 0, 'name': 1, 'rarity': 1, 'url': 1, 'price': 1}):
             z.append(
-                'Name: ' + x['name'] + '. Rarity: ' + str(x['rarity']) + '. Price: ' + str(x['price']) + ' point(s).')
-        await interaction.response.send_message(z, ephemeral=True)
+                'Name: ' + x['name'] + '. Rarity: ' + str(x['rarity']) + '. Price: ' + str(
+                    x['price']) + ' point(s)' + '. URL: ' + str(x['url']))
+        await interaction.response.send_message(z[0], ephemeral=True)
     else:
         await interaction.response.send_message("Item does not exist, cannot view", ephemeral=True)
 
@@ -74,12 +79,9 @@ async def seestore(interaction):
         z.append('Name: ' + x['name'] + '. Rarity: ' + str(x['rarity']) + '. Price: ' + str(x['price']) + ' point(s).')
 
     count = collectionItems.count_documents({'count': {'$gt': 0}})
-    print(count)
     for i in range(count):
         await interaction.channel.send(z[i])
-        print(i)
     await interaction.followup.send('ASTRAL MERCHANT:')
-    await interaction.response.send_message(z[count-1], ephemeral=True)
 
 
 @tree.command(name='myitems', description='View the items that you own',
@@ -89,7 +91,7 @@ async def myitems(interaction):
     z = []
     for x in collectionUsers.find(myquery, {'_id': 0, 'items.name': 1, 'items.rarity': 1}):
         z.append(str(x['items']))
-    await interaction.response.send_message(z, ephemeral=True)
+    await interaction.response.send_message(z.pop(0), ephemeral=True)
 
 
 @tree.command(name='buyitem', description='Purchse an item',
@@ -114,7 +116,7 @@ async def buyitem(interaction, name: str):
                 collectionItems.update_one({'name': name},
                                            {'$inc': {'count': -1}})
                 collectionUsers.update_one({'_id': interaction.user.id},
-                                           {'$inc': {'score': comp1}})
+                                           {'$inc': {'score': -1 * comp1}})
                 await interaction.response.send_message("Item bought", ephemeral=True)
             else:
                 await interaction.response.send_message("Invalid point amount", ephemeral=True)
@@ -144,9 +146,21 @@ async def announce(interaction):
     await interaction.response.send_message("The Astral Merchant has been updated!")
 
 
+@tree.command(name='helpme', description='View commands',
+              guild=discord.Object(id=))
+async def helpme(interaction):
+    await interaction.response.defer()
+    await interaction.channel.send('/setup: Join the Astral Merchant system')
+    await interaction.channel.send('/seestore: See the items currently available for sale')
+    await interaction.channel.send('/seeitem: See information about a specifc item')
+    await interaction.channel.send('/buyitem: Purchase a specifc item from the shop')
+    await interaction.channel.send('/myitems: See your purchased items')
+    await interaction.channel.send('/whoami: See details about your Astral Merchant setup')
+    await interaction.followup.send('COMMANDS:')
+
 intents = discord.Intents.default()
 intents.message_content = True
 
 token = open("./botToken", "r").read()
 
-client.run(token)
+client.run('')
