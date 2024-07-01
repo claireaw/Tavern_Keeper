@@ -1,5 +1,3 @@
-A quick bot originally made over a weekend. This is a sanitized version of a similar bot being built for an organization.
-
 <h1>Tavern Keeper: A Guide</h1>
 <h2>Introduction</h2>
 This is a quick guide to the operations of the Tavern Keeper Discord bot. This will cover how each of the commands work, and each of their use cases. Unless otherwise stated, all commands produce an emphemeral message, or one only visible to the user inputting the command.
@@ -13,7 +11,7 @@ Users who abuse this can have their name altered or be removed from the system a
 This command lists a user's username and currency amount. A user who does not exist will receive a message prompting them to run "/setup".
 
 <h2>/helpme</h2>
-This command lists all other commands that are available to users with any permissions. It does not list any commands that require a "staff" role.
+This command publically lists all other commands that are available to users with any permissions. It does not list any commands that require a "staff" role.
 
 <h2>/seestore</h2>
 This command publicly displays the list of items available to purchase from the Astral Merchant, as well as their respective prices. This can currently be done by any user, regardless of store affiliation.
