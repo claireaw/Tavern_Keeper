@@ -40,4 +40,5 @@ This command allows a staff member to announce a change in the Astral Merchant's
    * <s>Ensure close to 100% uptime for project</s>
    * Improve purchasing method to discourage nested statements
    * Add refusal messages to a non-permissioned user requesting a permissioned command. Currently it just fails.
+   * Switch out messy logic with comparative statements.
    
