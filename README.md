@@ -41,4 +41,9 @@ This command allows a staff member to announce a change in the Astral Merchant's
    * Improve purchasing method to discourage nested statements
    * Add refusal messages to a non-permissioned user requesting a permissioned command. Currently it just fails.
    * Switch out messy logic with comparative statements.
-   
+   ----------------------------------------------------------------------------------------------------------------------------------------------------------
+   <h1>Commands exclusive to Tavern Keeper 2</h1>
+   <h2>/resentshop</h2>
+   THIS COMMAND ONLY WORKS FOR USERS WITH THE "STAFF" ROLE
+
+   This commands allows a staff member to reset the contents of the shop. The staff member is prompted for an extra input to ensure this command is not run accidentally.
